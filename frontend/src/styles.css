@@ -446,3 +446,111 @@ input[type='file'] {
 .mutedButton {
   background: #1f2937;
 }
+
+/* STEP 5 PREMIUM ANIMATIONS */
+
+.card,
+.scoreCard,
+.result-card {
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.card:hover,
+.scoreCard:hover,
+.result-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 55px rgba(0, 0, 0, 0.35);
+  border-color: #4f46e5;
+}
+
+button {
+  position: relative;
+  overflow: hidden;
+}
+
+button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -140%;
+  width: 60%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.16);
+  transform: skewX(-20deg);
+  transition: 0.7s;
+}
+
+button:hover::after {
+  left: 160%;
+}
+
+.score {
+  animation: pulseGlow 2s infinite ease-in-out;
+}
+
+.results > * {
+  animation: riseIn 0.7s ease both;
+}
+
+.results > *:nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+.results > *:nth-child(3) {
+  animation-delay: 0.16s;
+}
+
+.results > *:nth-child(4) {
+  animation-delay: 0.24s;
+}
+
+.results > *:nth-child(5) {
+  animation-delay: 0.32s;
+}
+
+.results > *:nth-child(6) {
+  animation-delay: 0.4s;
+}
+
+.results > *:nth-child(7) {
+  animation-delay: 0.48s;
+}
+
+textarea:focus,
+input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
+}
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseGlow {
+  0% {
+    transform: scale(1);
+    text-shadow: 0 0 0 rgba(139, 92, 246, 0);
+  }
+
+  50% {
+    transform: scale(1.04);
+    text-shadow: 0 0 18px rgba(139, 92, 246, 0.45);
+  }
+
+  100% {
+    transform: scale(1);
+    text-shadow: 0 0 0 rgba(139, 92, 246, 0);
+  }
+}
