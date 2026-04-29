@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Dict, List, Union
+from typing import Dict, List
 
 
 class AnalyzeRequest(BaseModel):
@@ -30,6 +30,10 @@ class AnalyzeResponse(BaseModel):
     keyword_gap: KeywordGap
     category_coverage: Dict[str, CategoryCoverage] = {}
     improved_bullets: List[str]
+    ai_generated_bullets: List[str] = []
+    ai_interview_questions: List[str] = []
+    ai_star_answers: List[str] = []
+    ai_recruiter_summary: str = ""
     interview_questions: List[str]
     star_answers: List[str]
     action_plan: List[str] = []
