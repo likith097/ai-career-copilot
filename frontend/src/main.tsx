@@ -16,7 +16,7 @@ type Analysis = {
   resume_quality?: { metric_strength: number; section_strength: number; jd_terms_detected: string[] };
 };
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://ai-career-copilot-i5qw.onrender.com/api';
 
 function scoreLabel(score: number) {
   if (score >= 80) return 'Strong Match';
