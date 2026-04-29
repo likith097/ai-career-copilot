@@ -1,133 +1,102 @@
 # AI Career Copilot
 
-A 6-hour portfolio project that demonstrates full-stack software engineering and AI engineering fundamentals.
+AI-powered career optimization platform that helps candidates improve resumes, prepare for interviews, generate cover letters, and maximize ATS match scores.
 
-## What it does
+## Live Demo
 
-Users can upload a resume PDF or paste resume text, paste a job description, and generate:
+https://ai-career-copilot-kappa.vercel.app
 
-- ATS match score
-- Matched keywords
-- Missing keywords
-- Improved resume bullets
-- Interview questions
-- STAR-format answers
+---
+
+## Features
+
+- Resume PDF Upload + Parsing
+- ATS Match Score
+- Keyword Gap Detection
+- Skill Category Coverage
+- AI Recruiter Summary
+- Personalized Resume Bullet Rewrites
+- AI Interview Questions
+- AI STAR Answers
+- AI Cover Letter Generator
+- Export Report
+- Premium Animated UI
+
+---
+
+## Screenshots
+
+### Landing Page
+
+![Landing Page](./screenshots/landing-page.png)
+
+### Main Input Screen
+
+![Input Screen](./screenshots/input-screen.png)
+
+### ATS Results
+
+![ATS Results](./screenshots/ats-results.png)
+
+### AI Outputs
+
+![AI Outputs](./screenshots/ai-outputs.png)
+
+### Cover Letter
+
+![Cover Letter](./screenshots/cover-letter.png)
+
+---
 
 ## Tech Stack
 
-- Frontend: React, TypeScript, Vite, CSS
-- Backend: Python, FastAPI, Pydantic
-- AI/ML: TF-IDF similarity, keyword extraction, rule-based AI fallback
-- Parsing: PDF text extraction with pypdf
-- DevOps: Docker, Docker Compose, GitHub Actions
-- Testing: Pytest
+### Frontend
+- React
+- TypeScript
+- Vite
+- CSS
+- Lucide Icons
 
-## Why this project is strong for resumes
+### Backend
+- FastAPI
+- Python
 
-It shows practical skills across:
+### AI
+- Google Gemini API
 
-- REST API design
-- Frontend engineering
-- Backend engineering
-- AI workflow design
-- Resume/JD parsing
-- ATS-style scoring
-- Prompt-ready architecture
-- Testing
-- Dockerized deployment
-- CI/CD pipeline
+### Deployment
+- Vercel
+- Render
 
-## Run in VS Code without Docker
+---
 
-### 1. Open project
+## How It Works
 
-Open the `ai-career-copilot` folder in VS Code.
+1. Upload resume or paste resume text
+2. Paste target job description
+3. Choose desired outputs
+4. Analyze ATS fit
+5. Generate AI coaching outputs
+6. Export final report
 
-### 2. Start backend
+---
 
-```bash
-cd backend
-python -m venv .venv
-```
+## Why I Built This
 
-Activate environment:
+Hiring is difficult for many candidates. I built AI Career Copilot as a practical AI product that helps job seekers improve applications with personalized, real-time guidance.
 
-Windows:
+---
 
-```bash
-.venv\Scripts\activate
-```
+## Future Improvements
 
-Mac/Linux:
+- Saved user dashboard
+- Resume history tracking
+- Chrome extension for job sites
+- LinkedIn optimization
+- Mock interview mode
 
-```bash
-source .venv/bin/activate
-```
+---
 
-Install dependencies:
+## Author
 
-```bash
-pip install -r requirements.txt
-cp .env.example .env
-uvicorn app.main:app --reload
-```
-
-Backend runs at:
-
-```text
-http://localhost:8000
-```
-
-API docs:
-
-```text
-http://localhost:8000/docs
-```
-
-### 3. Start frontend
-
-Open a second VS Code terminal:
-
-```bash
-cd frontend
-npm install
-cp .env.example .env
-npm run dev
-```
-
-Frontend runs at:
-
-```text
-http://localhost:5173
-```
-
-## Run with Docker
-
-```bash
-cp backend/.env.example backend/.env
-docker compose up --build
-```
-
-## Test backend
-
-```bash
-cd backend
-pytest
-```
-
-## Suggested GitHub repo description
-
-Full-stack AI career platform using FastAPI, React, TypeScript, PDF parsing, ATS scoring, keyword extraction, Docker, and CI/CD to analyze resumes against job descriptions and generate interview preparation workflows.
-
-## Resume bullet
-
-Engineered an AI-powered career optimization platform using FastAPI, React, TypeScript, PDF parsing, and ATS-style NLP scoring to analyze resumes against job descriptions, identify keyword gaps, generate improved resume bullets, and create personalized interview preparation workflows.
-
-## Future improvements
-
-- Add PostgreSQL for saved analyses
-- Add user authentication
-- Add OpenAI or Claude API integration
-- Add real embeddings with ChromaDB or FAISS
-- Add downloadable PDF report
-- Deploy backend to Render and frontend to Vercel
+Likith 
