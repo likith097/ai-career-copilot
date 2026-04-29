@@ -567,10 +567,7 @@ function App() {
 
           {includeBullets && (
             <>
-              <ResultCard
-                title="ATS-Based Resume Bullet Suggestions"
-                items={analysis.improved_bullets}
-              />
+              
 
               {analysis.ai_generated_bullets &&
                 analysis.ai_generated_bullets.length > 0 && (
