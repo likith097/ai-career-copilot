@@ -16,6 +16,32 @@ def health():
     return {"status": "ok", "service": "AI Career Copilot"}
 
 
+@router.get("/test-gemini")
+def test_gemini():
+    if not generate_resume_bullets:
+        return {
+            "gemini_working": False,
+            "error": "Gemini service import failed"
+        }
+
+    try:
+        bullets = generate_resume_bullets(
+            resume_text="Software engineer with React, Python, FastAPI, AWS, SQL and Docker experience.",
+            job_description="Hiring a full-stack engineer with React, Python, APIs, cloud and databases."
+        )
+
+        return {
+            "gemini_working": True,
+            "sample_output": bullets
+        }
+
+    except Exception as e:
+        return {
+            "gemini_working": False,
+            "error": str(e)
+        }
+
+
 @router.post("/parse-resume")
 async def parse_resume(file: UploadFile = File(...)):
     if not file.filename.lower().endswith(".pdf"):
@@ -41,11 +67,11 @@ async def analyze(payload: AnalyzeRequest):
 
     if generate_resume_bullets:
         try:
-            ai_generated_bullets = generate_resume_bullets(
+            bullets = generate_resume_bullets(
                 payload.resume_text,
                 payload.job_description
             )
-            result["ai_generated_bullets"] = ai_generated_bullets
+            result["ai_generated_bullets"] = bullets
         except Exception as e:
             print(f"Gemini generation failed: {e}")
 
