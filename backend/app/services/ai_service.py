@@ -119,3 +119,36 @@ JOB DESCRIPTION:
 def generate_resume_bullets(resume_text: str, job_description: str):
     outputs = generate_ai_outputs(resume_text, job_description)
     return outputs["ai_generated_bullets"]
+
+def generate_cover_letter(resume_text: str, job_description: str):
+    client = get_client()
+
+    prompt = f"""
+You are an expert career coach and technical recruiter.
+
+Write a personalized cover letter based ONLY on the resume and job description.
+
+Rules:
+- Maximum 350 words
+- Professional but not robotic
+- Do not invent fake experience
+- Mention 2-3 strongest matching skills
+- Mention why the candidate fits the company/role
+- Use concise paragraphs
+- No markdown
+- No placeholders like [Company Name]
+- Start directly with the letter
+
+RESUME:
+{resume_text}
+
+JOB DESCRIPTION:
+{job_description}
+"""
+
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt
+    )
+
+    return (response.text or "").strip()

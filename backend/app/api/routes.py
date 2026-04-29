@@ -4,9 +4,10 @@ from app.services.parser import extract_text_from_pdf
 from app.services.llm import analyze_with_ai
 
 try:
-    from app.services.ai_service import generate_ai_outputs
+    from app.services.ai_service import generate_ai_outputs, generate_cover_letter
 except Exception:
     generate_ai_outputs = None
+    generate_cover_letter = None
 
 router = APIRouter()
 
@@ -38,6 +39,31 @@ def test_gemini():
     except Exception as e:
         return {
             "gemini_working": False,
+            "error": str(e)
+        }
+
+
+@router.post("/generate-cover-letter")
+async def create_cover_letter(payload: AnalyzeRequest):
+    if not generate_cover_letter:
+        return {
+            "cover_letter": "",
+            "error": "Gemini cover letter service unavailable"
+        }
+
+    try:
+        cover_letter = generate_cover_letter(
+            payload.resume_text,
+            payload.job_description
+        )
+
+        return {
+            "cover_letter": cover_letter
+        }
+
+    except Exception as e:
+        return {
+            "cover_letter": "",
             "error": str(e)
         }
 

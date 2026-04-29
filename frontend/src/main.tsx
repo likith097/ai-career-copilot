@@ -96,6 +96,9 @@ function App() {
   const [includeRecruiterSummary, setIncludeRecruiterSummary] = useState(true);
   const [wantsCoverLetter, setWantsCoverLetter] = useState(false);
 
+  const [coverLetter, setCoverLetter] = useState('');
+  const [coverLoading, setCoverLoading] = useState(false);
+
   function selectAllOutputs() {
     setIncludeAts(true);
     setIncludeBullets(true);
@@ -111,6 +114,7 @@ function App() {
     setIncludeStar(false);
     setIncludeRecruiterSummary(false);
     setWantsCoverLetter(false);
+    setCoverLetter('');
   }
 
   async function parseResume(file: File) {
@@ -138,6 +142,7 @@ function App() {
     setLoading(true);
     setError('');
     setAnalysis(null);
+    setCoverLetter('');
 
     try {
       const res = await fetch(`${API_URL}/analyze`, {
@@ -159,6 +164,32 @@ function App() {
       setError(e.message || 'Something went wrong');
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function generateCoverLetter() {
+    setCoverLoading(true);
+    setError('');
+
+    try {
+      const res = await fetch(`${API_URL}/generate-cover-letter`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          resume_text: resumeText,
+          job_description: jobDescription,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error('Failed to generate cover letter');
+
+      setCoverLetter(data.cover_letter || '');
+    } catch (e: any) {
+      setError(e.message || 'Failed to generate cover letter');
+    } finally {
+      setCoverLoading(false);
     }
   }
 
@@ -221,10 +252,10 @@ function App() {
       );
     }
 
-    if (wantsCoverLetter) {
+    if (coverLetter) {
       lines.push(
         'Cover Letter:',
-        'Cover letter generation is selected and will be generated in Step 3.',
+        coverLetter,
         ''
       );
     }
@@ -403,7 +434,10 @@ function App() {
                 <button
                   type="button"
                   className={!wantsCoverLetter ? 'toggleActive' : 'toggleButton'}
-                  onClick={() => setWantsCoverLetter(false)}
+                  onClick={() => {
+                    setWantsCoverLetter(false);
+                    setCoverLetter('');
+                  }}
                 >
                   No
                 </button>
@@ -419,8 +453,8 @@ function App() {
 
             {wantsCoverLetter && (
               <p className="miniNote">
-                Cover letter generation is selected. Step 3 will connect this to a
-                dedicated Gemini endpoint.
+                Cover letter generation is optional and runs only when you click the
+                button after analysis.
               </p>
             )}
           </div>
@@ -570,15 +604,38 @@ function App() {
             )}
 
           {wantsCoverLetter && (
-            <div className="card result-card comingSoonCard">
+            <div className="card result-card">
               <h2>
                 <FileText size={20} />
                 Cover Letter Generator
               </h2>
-              <p>
-                Cover letter generation is selected. In Step 3, this will become a
-                dedicated Gemini-powered action instead of being generated automatically.
-              </p>
+
+              {!coverLetter && (
+                <button onClick={generateCoverLetter} disabled={coverLoading}>
+                  {coverLoading ? (
+                    <>
+                      <Loader2 className="spinner" size={18} />
+                      Generating Cover Letter...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles size={18} />
+                      Generate Cover Letter
+                    </>
+                  )}
+                </button>
+              )}
+
+              {coverLetter && (
+                <>
+                  <p style={{ whiteSpace: 'pre-line' }}>{coverLetter}</p>
+
+                  <button className="secondary" onClick={exportReport}>
+                    <Download size={18} />
+                    Export With Cover Letter
+                  </button>
+                </>
+              )}
             </div>
           )}
         </section>
