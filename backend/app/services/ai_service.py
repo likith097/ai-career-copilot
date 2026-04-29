@@ -25,6 +25,8 @@ Rules:
 - Relevant to target role
 - Short and professional
 - Return only bullet points
+- Do not add introductions
+- Do not number the bullets
 
 RESUME:
 {resume_text}
@@ -41,9 +43,16 @@ JOB DESCRIPTION:
     text = response.text or ""
 
     bullets = []
+
     for line in text.splitlines():
-        clean = line.strip("-•1234567890. ").strip()
-        if clean:
-            bullets.append(clean)
+        clean = line.strip().lstrip("-•*1234567890. ").strip()
+
+        if not clean:
+            continue
+
+        if "here are" in clean.lower():
+            continue
+
+        bullets.append(clean)
 
     return bullets[:5]
