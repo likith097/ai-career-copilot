@@ -10,6 +10,10 @@ import {
   CheckCircle2,
   Loader2,
   UserSearch,
+  Rocket,
+  ShieldCheck,
+  FileText,
+  Brain,
 } from 'lucide-react';
 import './styles.css';
 
@@ -78,11 +82,19 @@ function AnimatedScore({ score }: { score: number }) {
 }
 
 function App() {
+  const [enteredApp, setEnteredApp] = useState(false);
   const [resumeText, setResumeText] = useState('');
   const [jobDescription, setJobDescription] = useState('');
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const [includeAts, setIncludeAts] = useState(true);
+  const [includeBullets, setIncludeBullets] = useState(true);
+  const [includeInterview, setIncludeInterview] = useState(true);
+  const [includeStar, setIncludeStar] = useState(true);
+  const [includeRecruiterSummary, setIncludeRecruiterSummary] = useState(true);
+  const [wantsCoverLetter, setWantsCoverLetter] = useState(false);
 
   async function parseResume(file: File) {
     const formData = new FormData();
@@ -179,19 +191,66 @@ function App() {
     URL.revokeObjectURL(url);
   }
 
+  if (!enteredApp) {
+    return (
+      <main className="welcome">
+        <div className="orb orb-one" />
+        <div className="orb orb-two" />
+        <div className="orb orb-three" />
+
+        <section className="welcomeCard">
+          <div className="badge premiumBadge">
+            <Sparkles size={16} />
+            Powered by Gemini AI
+          </div>
+
+          <h1>AI Career Copilot</h1>
+
+          <p className="welcomeSubtitle">
+            Your personal AI recruiter, resume strategist, and interview coach.
+          </p>
+
+          <div className="welcomeFeatures">
+            <div>
+              <ShieldCheck size={20} />
+              ATS Match Scoring
+            </div>
+            <div>
+              <Brain size={20} />
+              Personalized AI Coaching
+            </div>
+            <div>
+              <FileText size={20} />
+              Resume Bullet Rewrites
+            </div>
+          </div>
+
+          <button className="launchButton" onClick={() => setEnteredApp(true)}>
+            <Rocket size={19} />
+            Launch Career Copilot
+          </button>
+
+          <p className="welcomeNote">
+            Built with React, TypeScript, FastAPI, Gemini API, Vercel, and Render.
+          </p>
+        </section>
+      </main>
+    );
+  }
+
   return (
     <main className="app">
       <section className="hero fade-up">
         <div className="badge">
           <Sparkles size={16} />
-          AI + Software Engineering Portfolio Project
+          Gemini-powered AI career platform
         </div>
 
         <h1>AI Career Copilot</h1>
 
         <p>
-          Upload a resume, paste a job description, and generate explainable ATS
-          insights, skill gaps, optimized bullets, and interview preparation.
+          Upload your resume, paste a job description, choose your outputs, and
+          generate ATS insights plus personalized AI interview preparation.
         </p>
       </section>
 
@@ -230,6 +289,82 @@ function App() {
             placeholder="Paste the full job description here..."
           />
 
+          <div className="optionPanel">
+            <h3>Choose outputs</h3>
+
+            <label>
+              <input
+                type="checkbox"
+                checked={includeAts}
+                onChange={(e) => setIncludeAts(e.target.checked)}
+              />
+              ATS match report
+            </label>
+
+            <label>
+              <input
+                type="checkbox"
+                checked={includeRecruiterSummary}
+                onChange={(e) => setIncludeRecruiterSummary(e.target.checked)}
+              />
+              AI recruiter summary
+            </label>
+
+            <label>
+              <input
+                type="checkbox"
+                checked={includeBullets}
+                onChange={(e) => setIncludeBullets(e.target.checked)}
+              />
+              Resume bullet rewrites
+            </label>
+
+            <label>
+              <input
+                type="checkbox"
+                checked={includeInterview}
+                onChange={(e) => setIncludeInterview(e.target.checked)}
+              />
+              Interview questions
+            </label>
+
+            <label>
+              <input
+                type="checkbox"
+                checked={includeStar}
+                onChange={(e) => setIncludeStar(e.target.checked)}
+              />
+              STAR answers
+            </label>
+
+            <div className="coverToggle">
+              <span>Need a cover letter?</span>
+              <div>
+                <button
+                  type="button"
+                  className={!wantsCoverLetter ? 'toggleActive' : 'toggleButton'}
+                  onClick={() => setWantsCoverLetter(false)}
+                >
+                  No
+                </button>
+                <button
+                  type="button"
+                  className={wantsCoverLetter ? 'toggleActive' : 'toggleButton'}
+                  onClick={() => setWantsCoverLetter(true)}
+                >
+                  Yes
+                </button>
+              </div>
+            </div>
+
+            {wantsCoverLetter && (
+              <p className="miniNote">
+                Cover letter generation will be added as a separate action so the
+                app stays fast and avoids unnecessary AI calls.
+              </p>
+            )}
+          </div>
+
           <button onClick={analyze} disabled={loading}>
             {loading ? (
               <>
@@ -250,26 +385,28 @@ function App() {
 
       {analysis && (
         <section className="results fade-up">
-          <div className="scoreCard">
-            <h2>
-              <BarChart3 size={22} />
-              ATS Match Score
-            </h2>
+          {includeAts && (
+            <div className="scoreCard">
+              <h2>
+                <BarChart3 size={22} />
+                ATS Match Score
+              </h2>
 
-            <AnimatedScore score={analysis.ats_score} />
+              <AnimatedScore score={analysis.ats_score} />
 
-            <div className="scoreLabel">{scoreLabel(analysis.ats_score)}</div>
+              <div className="scoreLabel">{scoreLabel(analysis.ats_score)}</div>
 
-            <p>{analysis.summary}</p>
+              <p>{analysis.summary}</p>
 
-            <button className="secondary" onClick={exportReport}>
-              <Download size={18} />
-              Export Report
-            </button>
-          </div>
+              <button className="secondary" onClick={exportReport}>
+                <Download size={18} />
+                Export Report
+              </button>
+            </div>
+          )}
 
-          {analysis.ai_recruiter_summary && (
-            <div className="card result-card">
+          {includeRecruiterSummary && analysis.ai_recruiter_summary && (
+            <div className="card result-card aiCard">
               <h2>
                 <UserSearch size={20} />
                 AI Recruiter Summary
@@ -278,57 +415,66 @@ function App() {
             </div>
           )}
 
-          <div className="grid">
-            <ResultCard
-              title="Matched Keywords"
-              items={analysis.keyword_gap.matched_keywords}
-            />
+          {includeAts && (
+            <>
+              <div className="grid">
+                <ResultCard
+                  title="Matched Keywords"
+                  items={analysis.keyword_gap.matched_keywords}
+                />
 
-            <ResultCard
-              title="Missing Keywords"
-              items={analysis.keyword_gap.missing_keywords}
-            />
-          </div>
+                <ResultCard
+                  title="Missing Keywords"
+                  items={analysis.keyword_gap.missing_keywords}
+                />
+              </div>
 
-          {analysis.category_coverage && (
-            <CategoryCoverage categories={analysis.category_coverage} />
-          )}
+              {analysis.category_coverage && (
+                <CategoryCoverage categories={analysis.category_coverage} />
+              )}
 
-          {analysis.resume_quality && (
-            <div className="grid">
-              <Metric
-                title="Quantified Impact Strength"
-                value={analysis.resume_quality.metric_strength}
-              />
+              {analysis.resume_quality && (
+                <div className="grid">
+                  <Metric
+                    title="Quantified Impact Strength"
+                    value={analysis.resume_quality.metric_strength}
+                  />
 
-              <Metric
-                title="Resume Section Completeness"
-                value={analysis.resume_quality.section_strength}
-              />
-            </div>
-          )}
+                  <Metric
+                    title="Resume Section Completeness"
+                    value={analysis.resume_quality.section_strength}
+                  />
+                </div>
+              )}
 
-          <ResultCard
-            title="Priority Action Plan"
-            items={analysis.action_plan || []}
-            icon={<CheckCircle2 size={20} />}
-          />
-
-          <ResultCard
-            title="ATS-Based Resume Bullet Suggestions"
-            items={analysis.improved_bullets}
-          />
-
-          {analysis.ai_generated_bullets &&
-            analysis.ai_generated_bullets.length > 0 && (
               <ResultCard
-                title="AI Personalized Resume Bullets"
-                items={analysis.ai_generated_bullets}
-                icon={<Sparkles size={20} />}
+                title="Priority Action Plan"
+                items={analysis.action_plan || []}
+                icon={<CheckCircle2 size={20} />}
               />
-            )}
+            </>
+          )}
 
-          {analysis.ai_interview_questions &&
+          {includeBullets && (
+            <>
+              <ResultCard
+                title="ATS-Based Resume Bullet Suggestions"
+                items={analysis.improved_bullets}
+              />
+
+              {analysis.ai_generated_bullets &&
+                analysis.ai_generated_bullets.length > 0 && (
+                  <ResultCard
+                    title="AI Personalized Resume Bullets"
+                    items={analysis.ai_generated_bullets}
+                    icon={<Sparkles size={20} />}
+                  />
+                )}
+            </>
+          )}
+
+          {includeInterview &&
+            analysis.ai_interview_questions &&
             analysis.ai_interview_questions.length > 0 && (
               <ResultCard
                 title="AI Personalized Interview Questions"
@@ -337,7 +483,8 @@ function App() {
               />
             )}
 
-          {analysis.ai_star_answers &&
+          {includeStar &&
+            analysis.ai_star_answers &&
             analysis.ai_star_answers.length > 0 && (
               <ResultCard
                 title="AI Personalized STAR Answers"
@@ -345,8 +492,25 @@ function App() {
                 icon={<Sparkles size={20} />}
               />
             )}
+
+          {wantsCoverLetter && (
+            <div className="card result-card comingSoonCard">
+              <h2>
+                <FileText size={20} />
+                Cover Letter Generator
+              </h2>
+              <p>
+                Smart choice. Cover letter generation is prepared in the UI and
+                will be connected as a separate Gemini action next.
+              </p>
+            </div>
+          )}
         </section>
       )}
+
+      <footer className="footer">
+        Built by Likith Kumar Tarala · Powered by Gemini AI · React + FastAPI
+      </footer>
     </main>
   );
 }
