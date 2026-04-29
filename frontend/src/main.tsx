@@ -32,8 +32,6 @@ type Analysis = {
   ai_interview_questions?: string[];
   ai_star_answers?: string[];
   ai_recruiter_summary?: string;
-  interview_questions: string[];
-  star_answers: string[];
   action_plan?: string[];
   resume_quality?: {
     metric_strength: number;
@@ -98,9 +96,7 @@ function App() {
         body: formData,
       });
 
-      if (!res.ok) {
-        throw new Error('Could not parse resume PDF');
-      }
+      if (!res.ok) throw new Error('Could not parse resume PDF');
 
       const data = await res.json();
       setResumeText(data.text);
@@ -156,26 +152,20 @@ function App() {
       'Missing Keywords:',
       analysis.keyword_gap.missing_keywords.join(', ') || 'None',
       '',
-      'Improved Resume Bullets:',
+      'ATS-Based Resume Bullet Suggestions:',
       ...analysis.improved_bullets.map((x) => `- ${x}`),
       '',
-      'AI Generated Resume Bullets:',
+      'AI Personalized Resume Bullets:',
       ...(analysis.ai_generated_bullets || []).map((x) => `- ${x}`),
       '',
-      'Action Plan:',
+      'Priority Action Plan:',
       ...(analysis.action_plan || []).map((x) => `- ${x}`),
       '',
-      'AI Interview Questions:',
+      'AI Personalized Interview Questions:',
       ...(analysis.ai_interview_questions || []).map((x) => `- ${x}`),
       '',
-      'AI STAR Answers:',
+      'AI Personalized STAR Answers:',
       ...(analysis.ai_star_answers || []).map((x) => `- ${x}`),
-      '',
-      'Baseline Interview Questions:',
-      ...analysis.interview_questions.map((x) => `- ${x}`),
-      '',
-      'Baseline STAR Answers:',
-      ...analysis.star_answers.map((x) => `- ${x}`),
     ];
 
     const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
@@ -325,7 +315,7 @@ function App() {
           />
 
           <ResultCard
-            title="Baseline Improved Resume Bullets"
+            title="ATS-Based Resume Bullet Suggestions"
             items={analysis.improved_bullets}
           />
 
@@ -355,17 +345,6 @@ function App() {
                 icon={<Sparkles size={20} />}
               />
             )}
-
-          <ResultCard
-            title="Baseline Interview Questions"
-            items={analysis.interview_questions}
-            icon={<MessageSquare size={20} />}
-          />
-
-          <ResultCard
-            title="Baseline STAR Answers"
-            items={analysis.star_answers}
-          />
         </section>
       )}
     </main>
