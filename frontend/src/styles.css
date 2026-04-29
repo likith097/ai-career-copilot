@@ -13,6 +13,20 @@ body {
   max-width: 1180px;
   margin: auto;
   padding: 32px 18px 70px;
+  position: relative;
+  z-index: 1;
+}
+
+.app::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: url("/logo.png") center center no-repeat;
+  background-size: 700px;
+  opacity: 0.13;
+  filter: blur(12px);
+  z-index: -1;
+  pointer-events: none;
 }
 
 h1,
@@ -37,6 +51,8 @@ button {
   background: linear-gradient(135deg, #4f46e5, #7c3aed);
   color: white;
   transition: 0.2s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 button:hover {
@@ -47,6 +63,22 @@ button:hover {
 button:disabled {
   opacity: 0.65;
   cursor: not-allowed;
+}
+
+button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -140%;
+  width: 60%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.16);
+  transform: skewX(-20deg);
+  transition: 0.7s;
+}
+
+button:hover::after {
+  left: 160%;
 }
 
 .secondary {
@@ -96,6 +128,18 @@ button:disabled {
   border-radius: 22px;
   padding: 22px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.card:hover,
+.scoreCard:hover,
+.result-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 55px rgba(0, 0, 0, 0.35);
+  border-color: #4f46e5;
 }
 
 .card h2 {
@@ -107,7 +151,7 @@ button:disabled {
 }
 
 textarea,
-input[type='file'] {
+input[type="file"] {
   width: 100%;
   margin-bottom: 14px;
 }
@@ -122,11 +166,18 @@ textarea {
   padding: 14px;
 }
 
-input[type='file'] {
+input[type="file"] {
   padding: 10px;
   background: #0f172a;
   border: 1px solid #334155;
   border-radius: 14px;
+}
+
+textarea:focus,
+input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
 }
 
 .optionPanel {
@@ -137,8 +188,31 @@ input[type='file'] {
   margin-bottom: 14px;
 }
 
-.optionPanel h3 {
-  margin-bottom: 12px;
+.optionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.optionHeader h3 {
+  margin-bottom: 0;
+}
+
+.optionActions {
+  display: flex;
+  gap: 8px;
+}
+
+.smallButton {
+  padding: 8px 10px;
+  font-size: 13px;
+  border-radius: 10px;
+}
+
+.mutedButton {
+  background: #1f2937;
 }
 
 .optionPanel label {
@@ -191,6 +265,10 @@ input[type='file'] {
   gap: 18px;
 }
 
+.results > * {
+  animation: riseIn 0.7s ease both;
+}
+
 .scoreCard {
   background: linear-gradient(135deg, #111827, #1e1b4b);
   border-radius: 24px;
@@ -204,6 +282,7 @@ input[type='file'] {
   font-weight: 800;
   margin: 10px 0;
   color: #a78bfa;
+  animation: pulseGlow 2s infinite ease-in-out;
 }
 
 .scoreLabel {
@@ -223,10 +302,6 @@ input[type='file'] {
 
 .aiCard {
   border: 1px solid #6d28d9;
-}
-
-.comingSoonCard {
-  border: 1px dashed #64748b;
 }
 
 .metricValue {
@@ -287,6 +362,8 @@ input[type='file'] {
   animation-delay: 0.2s;
 }
 
+/* LANDING PAGE */
+
 .welcome {
   min-height: 100vh;
   display: grid;
@@ -302,10 +379,10 @@ input[type='file'] {
   position: absolute;
   inset: 0;
   background: url("/logo.png") center center no-repeat;
-  background-size: 460px;
-  opacity: 0.08;
-  filter: blur(18px);
-  transform: scale(1.35);
+  background-size: 620px;
+  opacity: 0.16;
+  filter: blur(10px);
+  transform: scale(1.2);
   z-index: 0;
 }
 
@@ -319,6 +396,23 @@ input[type='file'] {
   text-align: center;
   position: relative;
   z-index: 2;
+}
+
+.heroLogoWrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.heroLogo {
+  width: 130px;
+  height: 130px;
+  object-fit: contain;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 12px;
+  border-radius: 28px;
+  box-shadow: 0 0 28px rgba(99, 102, 241, 0.35);
+  animation: floatLogo 3s ease-in-out infinite;
 }
 
 .welcomeCard h1 {
@@ -418,126 +512,6 @@ input[type='file'] {
   }
 }
 
-@media (max-width: 768px) {
-  .hero h1,
-  .welcomeCard h1 {
-    font-size: 38px;
-  }
-
-  .score {
-    font-size: 54px;
-  }
-
-  .welcomeCard {
-    padding: 28px;
-  }
-}
-.optionHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-
-.optionHeader h3 {
-  margin-bottom: 0;
-}
-
-.optionActions {
-  display: flex;
-  gap: 8px;
-}
-
-.smallButton {
-  padding: 8px 10px;
-  font-size: 13px;
-  border-radius: 10px;
-}
-
-.mutedButton {
-  background: #1f2937;
-}
-
-/* STEP 5 PREMIUM ANIMATIONS */
-
-.card,
-.scoreCard,
-.result-card {
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease,
-    border-color 0.25s ease;
-}
-
-.card:hover,
-.scoreCard:hover,
-.result-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 24px 55px rgba(0, 0, 0, 0.35);
-  border-color: #4f46e5;
-}
-
-button {
-  position: relative;
-  overflow: hidden;
-}
-
-button::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -140%;
-  width: 60%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.16);
-  transform: skewX(-20deg);
-  transition: 0.7s;
-}
-
-button:hover::after {
-  left: 160%;
-}
-
-.score {
-  animation: pulseGlow 2s infinite ease-in-out;
-}
-
-.results > * {
-  animation: riseIn 0.7s ease both;
-}
-
-.results > *:nth-child(2) {
-  animation-delay: 0.08s;
-}
-
-.results > *:nth-child(3) {
-  animation-delay: 0.16s;
-}
-
-.results > *:nth-child(4) {
-  animation-delay: 0.24s;
-}
-
-.results > *:nth-child(5) {
-  animation-delay: 0.32s;
-}
-
-.results > *:nth-child(6) {
-  animation-delay: 0.4s;
-}
-
-.results > *:nth-child(7) {
-  animation-delay: 0.48s;
-}
-
-textarea:focus,
-input:focus {
-  outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
-}
-
 @keyframes riseIn {
   from {
     opacity: 0;
@@ -564,5 +538,39 @@ input:focus {
   100% {
     transform: scale(1);
     text-shadow: 0 0 0 rgba(139, 92, 246, 0);
+  }
+}
+
+@keyframes floatLogo {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero h1,
+  .welcomeCard h1 {
+    font-size: 38px;
+  }
+
+  .score {
+    font-size: 54px;
+  }
+
+  .welcomeCard {
+    padding: 28px;
+  }
+
+  .heroLogo {
+    width: 100px;
+    height: 100px;
   }
 }
