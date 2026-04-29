@@ -1,3 +1,4 @@
+from app.services.ai_service import generate_resume_bullets
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from app.models.schemas import AnalyzeRequest, AnalyzeResponse
 from app.services.parser import extract_text_from_pdf
@@ -24,4 +25,16 @@ async def parse_resume(file: UploadFile = File(...)):
 
 @router.post("/analyze", response_model=AnalyzeResponse)
 async def analyze(payload: AnalyzeRequest):
-    return await analyze_with_ai(payload.resume_text, payload.job_description)
+    result = await analyze_with_ai(
+        payload.resume_text,
+        payload.job_description
+    )
+
+    ai_generated_bullets = generate_resume_bullets(
+        payload.resume_text,
+        payload.job_description
+    )
+
+    result["ai_generated_bullets"] = ai_generated_bullets
+
+    return result
