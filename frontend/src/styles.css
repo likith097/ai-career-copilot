@@ -297,6 +297,18 @@ input[type='file'] {
   background: radial-gradient(circle at top right, #312e81, #0b1020 60%);
 }
 
+.welcome::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/logo.png") center center no-repeat;
+  background-size: 460px;
+  opacity: 0.08;
+  filter: blur(18px);
+  transform: scale(1.35);
+  z-index: 0;
+}
+
 .welcomeCard {
   width: 100%;
   max-width: 760px;
