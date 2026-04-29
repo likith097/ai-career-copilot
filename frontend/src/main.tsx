@@ -9,6 +9,7 @@ import {
   BarChart3,
   CheckCircle2,
   Loader2,
+  UserSearch,
 } from 'lucide-react';
 import './styles.css';
 
@@ -27,6 +28,10 @@ type Analysis = {
   };
   category_coverage?: Record<string, Category>;
   improved_bullets: string[];
+  ai_generated_bullets?: string[];
+  ai_interview_questions?: string[];
+  ai_star_answers?: string[];
+  ai_recruiter_summary?: string;
   interview_questions: string[];
   star_answers: string[];
   action_plan?: string[];
@@ -123,7 +128,8 @@ function App() {
         throw new Error('Please add a resume and job description with enough text.');
       }
 
-      setAnalysis(await res.json());
+      const data = await res.json();
+      setAnalysis(data);
     } catch (e: any) {
       setError(e.message || 'Something went wrong');
     } finally {
@@ -141,6 +147,9 @@ function App() {
       'Summary:',
       analysis.summary,
       '',
+      'AI Recruiter Summary:',
+      analysis.ai_recruiter_summary || 'Not available',
+      '',
       'Matched Keywords:',
       analysis.keyword_gap.matched_keywords.join(', ') || 'None',
       '',
@@ -150,13 +159,22 @@ function App() {
       'Improved Resume Bullets:',
       ...analysis.improved_bullets.map((x) => `- ${x}`),
       '',
+      'AI Generated Resume Bullets:',
+      ...(analysis.ai_generated_bullets || []).map((x) => `- ${x}`),
+      '',
       'Action Plan:',
       ...(analysis.action_plan || []).map((x) => `- ${x}`),
       '',
-      'Interview Questions:',
+      'AI Interview Questions:',
+      ...(analysis.ai_interview_questions || []).map((x) => `- ${x}`),
+      '',
+      'AI STAR Answers:',
+      ...(analysis.ai_star_answers || []).map((x) => `- ${x}`),
+      '',
+      'Baseline Interview Questions:',
       ...analysis.interview_questions.map((x) => `- ${x}`),
       '',
-      'STAR Answers:',
+      'Baseline STAR Answers:',
       ...analysis.star_answers.map((x) => `- ${x}`),
     ];
 
@@ -226,7 +244,7 @@ function App() {
             {loading ? (
               <>
                 <Loader2 className="spinner" size={18} />
-                Analyzing...
+                Generating AI analysis...
               </>
             ) : (
               <>
@@ -259,6 +277,16 @@ function App() {
               Export Report
             </button>
           </div>
+
+          {analysis.ai_recruiter_summary && (
+            <div className="card result-card">
+              <h2>
+                <UserSearch size={20} />
+                AI Recruiter Summary
+              </h2>
+              <p>{analysis.ai_recruiter_summary}</p>
+            </div>
+          )}
 
           <div className="grid">
             <ResultCard
@@ -297,17 +325,47 @@ function App() {
           />
 
           <ResultCard
-            title="Improved Resume Bullets"
+            title="Baseline Improved Resume Bullets"
             items={analysis.improved_bullets}
           />
 
+          {analysis.ai_generated_bullets &&
+            analysis.ai_generated_bullets.length > 0 && (
+              <ResultCard
+                title="AI Personalized Resume Bullets"
+                items={analysis.ai_generated_bullets}
+                icon={<Sparkles size={20} />}
+              />
+            )}
+
+          {analysis.ai_interview_questions &&
+            analysis.ai_interview_questions.length > 0 && (
+              <ResultCard
+                title="AI Personalized Interview Questions"
+                items={analysis.ai_interview_questions}
+                icon={<MessageSquare size={20} />}
+              />
+            )}
+
+          {analysis.ai_star_answers &&
+            analysis.ai_star_answers.length > 0 && (
+              <ResultCard
+                title="AI Personalized STAR Answers"
+                items={analysis.ai_star_answers}
+                icon={<Sparkles size={20} />}
+              />
+            )}
+
           <ResultCard
-            title="Interview Questions"
+            title="Baseline Interview Questions"
             items={analysis.interview_questions}
             icon={<MessageSquare size={20} />}
           />
 
-          <ResultCard title="STAR Answers" items={analysis.star_answers} />
+          <ResultCard
+            title="Baseline STAR Answers"
+            items={analysis.star_answers}
+          />
         </section>
       )}
     </main>

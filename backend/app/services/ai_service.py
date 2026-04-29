@@ -1,4 +1,5 @@
 import os
+import json
 from google import genai
 
 
@@ -11,22 +12,77 @@ def get_client():
     return genai.Client(api_key=api_key)
 
 
-def generate_resume_bullets(resume_text: str, job_description: str):
+def _clean_json(text: str):
+    text = text.strip()
+
+    if text.startswith("```json"):
+        text = text.replace("```json", "").replace("```", "").strip()
+
+    if text.startswith("```"):
+        text = text.replace("```", "").strip()
+
+    return json.loads(text)
+
+
+def generate_ai_outputs(resume_text: str, job_description: str):
     client = get_client()
 
     prompt = f"""
-You are an expert resume writer.
+You are an expert technical recruiter, resume coach, and software engineering interview coach.
 
-Rewrite 5 powerful ATS-friendly resume bullet points based on this candidate resume and job description.
+Generate highly personalized outputs based ONLY on the resume and job description below.
 
-Rules:
+Important:
+- Do NOT use generic templates.
+- Do NOT repeat the same interview questions for every user.
+- Tailor everything to the candidate's actual projects, skills, experience, and the target job.
+- Mention specific technologies from the resume and job description.
+- Return valid JSON only.
+- No markdown.
+- No explanations outside JSON.
+
+Return this exact JSON structure:
+
+{{
+  "ai_generated_bullets": [
+    "bullet 1",
+    "bullet 2",
+    "bullet 3",
+    "bullet 4",
+    "bullet 5"
+  ],
+  "ai_interview_questions": [
+    "question 1",
+    "question 2",
+    "question 3",
+    "question 4",
+    "question 5"
+  ],
+  "ai_star_answers": [
+    "STAR answer 1",
+    "STAR answer 2",
+    "STAR answer 3"
+  ],
+  "ai_recruiter_summary": "3-4 sentence recruiter-style summary"
+}}
+
+Resume bullet rules:
 - Strong action verbs
-- Quantify impact where possible
-- Relevant to target role
-- Short and professional
-- Return only bullet points
-- Do not add introductions
-- Do not number the bullets
+- ATS-friendly
+- Tailored to the job description
+- Mention relevant technologies
+- Add measurable impact where possible
+- Do not invent fake companies
+
+Interview question rules:
+- Ask questions specific to this resume and this job description
+- Include technical, behavioral, architecture, and debugging questions
+- Avoid generic questions like 'Tell me about yourself'
+
+STAR answer rules:
+- Use Situation, Task, Action, Result format
+- Make answers realistic for this candidate
+- Reference resume experience and target role needs
 
 RESUME:
 {resume_text}
@@ -40,19 +96,26 @@ JOB DESCRIPTION:
         contents=prompt
     )
 
-    text = response.text or ""
+    text = response.text or "{}"
 
-    bullets = []
+    try:
+        data = _clean_json(text)
+    except Exception:
+        data = {
+            "ai_generated_bullets": [],
+            "ai_interview_questions": [],
+            "ai_star_answers": [],
+            "ai_recruiter_summary": ""
+        }
 
-    for line in text.splitlines():
-        clean = line.strip().lstrip("-•*1234567890. ").strip()
+    return {
+        "ai_generated_bullets": data.get("ai_generated_bullets", [])[:5],
+        "ai_interview_questions": data.get("ai_interview_questions", [])[:5],
+        "ai_star_answers": data.get("ai_star_answers", [])[:3],
+        "ai_recruiter_summary": data.get("ai_recruiter_summary", "")
+    }
 
-        if not clean:
-            continue
 
-        if "here are" in clean.lower():
-            continue
-
-        bullets.append(clean)
-
-    return bullets[:5]
+def generate_resume_bullets(resume_text: str, job_description: str):
+    outputs = generate_ai_outputs(resume_text, job_description)
+    return outputs["ai_generated_bullets"]

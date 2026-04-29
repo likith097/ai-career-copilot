@@ -4,9 +4,9 @@ from app.services.parser import extract_text_from_pdf
 from app.services.llm import analyze_with_ai
 
 try:
-    from app.services.ai_service import generate_resume_bullets
+    from app.services.ai_service import generate_ai_outputs
 except Exception:
-    generate_resume_bullets = None
+    generate_ai_outputs = None
 
 router = APIRouter()
 
@@ -18,21 +18,21 @@ def health():
 
 @router.get("/test-gemini")
 def test_gemini():
-    if not generate_resume_bullets:
+    if not generate_ai_outputs:
         return {
             "gemini_working": False,
             "error": "Gemini service import failed"
         }
 
     try:
-        bullets = generate_resume_bullets(
+        outputs = generate_ai_outputs(
             resume_text="Software engineer with React, Python, FastAPI, AWS, SQL and Docker experience.",
             job_description="Hiring a full-stack engineer with React, Python, APIs, cloud and databases."
         )
 
         return {
             "gemini_working": True,
-            "sample_output": bullets
+            "sample_output": outputs
         }
 
     except Exception as e:
@@ -64,14 +64,22 @@ async def analyze(payload: AnalyzeRequest):
     )
 
     result["ai_generated_bullets"] = []
+    result["ai_interview_questions"] = []
+    result["ai_star_answers"] = []
+    result["ai_recruiter_summary"] = ""
 
-    if generate_resume_bullets:
+    if generate_ai_outputs:
         try:
-            bullets = generate_resume_bullets(
+            ai_outputs = generate_ai_outputs(
                 payload.resume_text,
                 payload.job_description
             )
-            result["ai_generated_bullets"] = bullets
+
+            result["ai_generated_bullets"] = ai_outputs.get("ai_generated_bullets", [])
+            result["ai_interview_questions"] = ai_outputs.get("ai_interview_questions", [])
+            result["ai_star_answers"] = ai_outputs.get("ai_star_answers", [])
+            result["ai_recruiter_summary"] = ai_outputs.get("ai_recruiter_summary", "")
+
         except Exception as e:
             print(f"Gemini generation failed: {e}")
 
