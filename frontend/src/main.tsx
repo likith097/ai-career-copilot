@@ -96,6 +96,23 @@ function App() {
   const [includeRecruiterSummary, setIncludeRecruiterSummary] = useState(true);
   const [wantsCoverLetter, setWantsCoverLetter] = useState(false);
 
+  function selectAllOutputs() {
+    setIncludeAts(true);
+    setIncludeBullets(true);
+    setIncludeInterview(true);
+    setIncludeStar(true);
+    setIncludeRecruiterSummary(true);
+  }
+
+  function clearAllOutputs() {
+    setIncludeAts(false);
+    setIncludeBullets(false);
+    setIncludeInterview(false);
+    setIncludeStar(false);
+    setIncludeRecruiterSummary(false);
+    setWantsCoverLetter(false);
+  }
+
   async function parseResume(file: File) {
     const formData = new FormData();
     formData.append('file', file);
@@ -148,37 +165,69 @@ function App() {
   function exportReport() {
     if (!analysis) return;
 
-    const lines = [
-      'AI Career Copilot Report',
-      `ATS Score: ${analysis.ats_score}/100 - ${scoreLabel(analysis.ats_score)}`,
-      '',
-      'Summary:',
-      analysis.summary,
-      '',
-      'AI Recruiter Summary:',
-      analysis.ai_recruiter_summary || 'Not available',
-      '',
-      'Matched Keywords:',
-      analysis.keyword_gap.matched_keywords.join(', ') || 'None',
-      '',
-      'Missing Keywords:',
-      analysis.keyword_gap.missing_keywords.join(', ') || 'None',
-      '',
-      'ATS-Based Resume Bullet Suggestions:',
-      ...analysis.improved_bullets.map((x) => `- ${x}`),
-      '',
-      'AI Personalized Resume Bullets:',
-      ...(analysis.ai_generated_bullets || []).map((x) => `- ${x}`),
-      '',
-      'Priority Action Plan:',
-      ...(analysis.action_plan || []).map((x) => `- ${x}`),
-      '',
-      'AI Personalized Interview Questions:',
-      ...(analysis.ai_interview_questions || []).map((x) => `- ${x}`),
-      '',
-      'AI Personalized STAR Answers:',
-      ...(analysis.ai_star_answers || []).map((x) => `- ${x}`),
-    ];
+    const lines = ['AI Career Copilot Report', ''];
+
+    if (includeAts) {
+      lines.push(
+        `ATS Score: ${analysis.ats_score}/100 - ${scoreLabel(analysis.ats_score)}`,
+        '',
+        'Summary:',
+        analysis.summary,
+        '',
+        'Matched Keywords:',
+        analysis.keyword_gap.matched_keywords.join(', ') || 'None',
+        '',
+        'Missing Keywords:',
+        analysis.keyword_gap.missing_keywords.join(', ') || 'None',
+        '',
+        'Priority Action Plan:',
+        ...(analysis.action_plan || []).map((x) => `- ${x}`),
+        ''
+      );
+    }
+
+    if (includeRecruiterSummary) {
+      lines.push(
+        'AI Recruiter Summary:',
+        analysis.ai_recruiter_summary || 'Not available',
+        ''
+      );
+    }
+
+    if (includeBullets) {
+      lines.push(
+        'ATS-Based Resume Bullet Suggestions:',
+        ...analysis.improved_bullets.map((x) => `- ${x}`),
+        '',
+        'AI Personalized Resume Bullets:',
+        ...(analysis.ai_generated_bullets || []).map((x) => `- ${x}`),
+        ''
+      );
+    }
+
+    if (includeInterview) {
+      lines.push(
+        'AI Personalized Interview Questions:',
+        ...(analysis.ai_interview_questions || []).map((x) => `- ${x}`),
+        ''
+      );
+    }
+
+    if (includeStar) {
+      lines.push(
+        'AI Personalized STAR Answers:',
+        ...(analysis.ai_star_answers || []).map((x) => `- ${x}`),
+        ''
+      );
+    }
+
+    if (wantsCoverLetter) {
+      lines.push(
+        'Cover Letter:',
+        'Cover letter generation is selected and will be generated in Step 3.',
+        ''
+      );
+    }
 
     const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -290,7 +339,18 @@ function App() {
           />
 
           <div className="optionPanel">
-            <h3>Choose outputs</h3>
+            <div className="optionHeader">
+              <h3>Choose outputs</h3>
+
+              <div className="optionActions">
+                <button type="button" className="smallButton" onClick={selectAllOutputs}>
+                  Select all
+                </button>
+                <button type="button" className="smallButton mutedButton" onClick={clearAllOutputs}>
+                  Clear
+                </button>
+              </div>
+            </div>
 
             <label>
               <input
@@ -298,7 +358,7 @@ function App() {
                 checked={includeAts}
                 onChange={(e) => setIncludeAts(e.target.checked)}
               />
-              ATS match report
+              ATS score, keyword gaps, and action plan
             </label>
 
             <label>
@@ -325,7 +385,7 @@ function App() {
                 checked={includeInterview}
                 onChange={(e) => setIncludeInterview(e.target.checked)}
               />
-              Interview questions
+              AI interview questions
             </label>
 
             <label>
@@ -334,7 +394,7 @@ function App() {
                 checked={includeStar}
                 onChange={(e) => setIncludeStar(e.target.checked)}
               />
-              STAR answers
+              AI STAR answers
             </label>
 
             <div className="coverToggle">
@@ -359,8 +419,8 @@ function App() {
 
             {wantsCoverLetter && (
               <p className="miniNote">
-                Cover letter generation will be added as a separate action so the
-                app stays fast and avoids unnecessary AI calls.
+                Cover letter generation is selected. Step 3 will connect this to a
+                dedicated Gemini endpoint.
               </p>
             )}
           </div>
@@ -400,7 +460,23 @@ function App() {
 
               <button className="secondary" onClick={exportReport}>
                 <Download size={18} />
-                Export Report
+                Export Selected Report
+              </button>
+            </div>
+          )}
+
+          {!includeAts && analysis && (
+            <div className="card result-card">
+              <h2>
+                <Download size={20} />
+                Export Selected Report
+              </h2>
+              <p>
+                Your selected AI outputs are ready. Export only the sections you chose.
+              </p>
+              <button className="secondary" onClick={exportReport}>
+                <Download size={18} />
+                Export Selected Report
               </button>
             </div>
           )}
@@ -500,8 +576,8 @@ function App() {
                 Cover Letter Generator
               </h2>
               <p>
-                Smart choice. Cover letter generation is prepared in the UI and
-                will be connected as a separate Gemini action next.
+                Cover letter generation is selected. In Step 3, this will become a
+                dedicated Gemini-powered action instead of being generated automatically.
               </p>
             </div>
           )}
