@@ -32,14 +32,34 @@ You are an expert technical recruiter, resume coach, and software engineering in
 
 Generate highly personalized outputs based ONLY on the resume and job description below.
 
-Important:
+IMPORTANT QUALITY RULES:
 - Do NOT use generic templates.
-- Do NOT repeat the same interview questions for every user.
-- Tailor everything to the candidate's actual projects, skills, experience, and the target job.
+- Do NOT repeat the same topics.
+- Tailor everything to the candidate's actual resume and the target job.
 - Mention specific technologies from the resume and job description.
-- Return valid JSON only.
-- No markdown.
-- No explanations outside JSON.
+- Be concise, recruiter-friendly, and practical.
+- Do not invent fake companies, fake projects, fake numbers, or fake experience.
+- Prefer measurable impact only when the resume already supports it.
+- Avoid long paragraphs.
+- Avoid filler phrases.
+
+OUTPUT LENGTH RULES:
+- Resume bullets: maximum 22 words each.
+- Interview questions: maximum 2 lines each.
+- STAR answers: maximum 130 words each.
+- Recruiter summary: maximum 4 sentences.
+
+DIVERSITY RULES:
+- Each resume bullet should focus on a different strength.
+- Each interview question should test a different area.
+- Each STAR answer must focus on a different theme:
+  1. debugging or production issue
+  2. deployment / automation / CI/CD
+  3. architecture / scalability / system design
+
+Return valid JSON only.
+No markdown.
+No explanations outside JSON.
 
 Return this exact JSON structure:
 
@@ -66,23 +86,26 @@ Return this exact JSON structure:
   "ai_recruiter_summary": "3-4 sentence recruiter-style summary"
 }}
 
-Resume bullet rules:
-- Strong action verbs
-- ATS-friendly
-- Tailored to the job description
-- Mention relevant technologies
-- Add measurable impact where possible
-- Do not invent fake companies
+RESUME BULLET RULES:
+- Start with strong action verbs.
+- Make each bullet ATS-friendly.
+- Match the target job description.
+- Include relevant technologies.
+- Keep each bullet sharp and realistic.
+- Do not overstuff keywords.
 
-Interview question rules:
-- Ask questions specific to this resume and this job description
-- Include technical, behavioral, architecture, and debugging questions
-- Avoid generic questions like 'Tell me about yourself'
+INTERVIEW QUESTION RULES:
+- Ask questions specific to this resume and job description.
+- Include technical, behavioral, architecture, debugging, and deployment questions.
+- Avoid generic questions like "Tell me about yourself."
+- Make questions realistic for software engineering interviews.
 
-STAR answer rules:
-- Use Situation, Task, Action, Result format
-- Make answers realistic for this candidate
-- Reference resume experience and target role needs
+STAR ANSWER RULES:
+- Use Situation, Task, Action, Result format.
+- Make answers realistic for this candidate.
+- Reference resume experience and target role needs.
+- Keep each answer concise.
+- Do not repeat the same story.
 
 RESUME:
 {resume_text}
@@ -120,6 +143,7 @@ def generate_resume_bullets(resume_text: str, job_description: str):
     outputs = generate_ai_outputs(resume_text, job_description)
     return outputs["ai_generated_bullets"]
 
+
 def generate_cover_letter(resume_text: str, job_description: str):
     client = get_client()
 
@@ -128,16 +152,18 @@ You are an expert career coach and technical recruiter.
 
 Write a personalized cover letter based ONLY on the resume and job description.
 
-Rules:
-- Maximum 350 words
-- Professional but not robotic
-- Do not invent fake experience
-- Mention 2-3 strongest matching skills
-- Mention why the candidate fits the company/role
-- Use concise paragraphs
-- No markdown
-- No placeholders like [Company Name]
-- Start directly with the letter
+QUALITY RULES:
+- Maximum 320 words.
+- Professional but not robotic.
+- Do not invent fake experience.
+- Mention 2-3 strongest matching skills.
+- Mention why the candidate fits the company or role.
+- Use concise paragraphs.
+- No markdown.
+- No placeholders like [Company Name].
+- Start directly with the letter.
+- Avoid repeating the resume word-for-word.
+- End with a confident, professional closing.
 
 RESUME:
 {resume_text}
